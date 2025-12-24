@@ -1,68 +1,53 @@
 'use client';
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 
 const CartContext = createContext();
 
 export function CartProvider({ children }) {
   const [cart, setCart] = useState([]);
-  const [isCartOpen, setIsCartOpen] = useState(false);
 
-  // Cargar carrito de localStorage al iniciar
   useEffect(() => {
-    const saved = localStorage.getItem('cart');
-    if (saved) setCart(JSON.parse(saved));
+    const stored = localStorage.getItem('cart');
+    if (stored) setCart(JSON.parse(stored));
   }, []);
 
-  // Guardar en localStorage al cambiar
   useEffect(() => {
     localStorage.setItem('cart', JSON.stringify(cart));
   }, [cart]);
 
-  const addToCart = (product, variant = null, qty = 1) => {
-    setCart(prev => {
-      const itemKey = variant ? `${product.id}-${variant.name}` : product.id;
-      const existing = prev.find(item => item.key === itemKey);
-      
-      const price = variant ? (parseFloat(variant.price) || parseFloat(product.price)) : parseFloat(product.price);
+  const addToCart = (product, variant = null) => {
+    // Validación de stock (lógica de negocio para evitar overselling en eCommerce)
+    const currentStock = variant ? variant.stock : product.stock;
+    if (parseInt(currentStock) <= 0) {
+      alert("Producto agotado");
+      return;
+    }
 
-      if (existing) {
-        return prev.map(item => 
-          item.key === itemKey ? { ...item, qty: item.qty + qty } : item
-        );
-      }
-
-      return [...prev, {
-        key: itemKey,
-        id: product.id,
-        name: product.name,
-        price: price,
-        image: product.image || product.img,
-        variant: variant ? variant.name : null,
-        qty: qty
-      }];
-    });
-    setIsCartOpen(true);
+    const key = variant ? `\( {product.id}- \){variant.name}` : product.id;
+    const existing = cart.find(item => item.key === key);
+    if (existing) {
+      updateQty(key, 1);
+    } else {
+      setCart([...cart, { ...product, variant, qty: 1, key }]);
+    }
   };
 
   const removeFromCart = (key) => {
-    setCart(prev => prev.filter(item => item.key !== key));
+    setCart(cart.filter(item => item.key !== key));
   };
 
   const updateQty = (key, delta) => {
-    setCart(prev => prev.map(item => {
-      if (item.key === key) {
-        return { ...item, qty: Math.max(1, item.qty + delta) };
-      }
-      return item;
-    }));
+    setCart(cart.map(item => 
+      item.key === key ? { ...item, qty: Math.max(1, item.qty + delta) } : item
+    ));
   };
 
   const clearCart = () => setCart([]);
 
-  const cartTotal = cart.reduce((acc, item) => acc + (item.price * item.qty), 0);
+  const cartTotal = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
 
   return (
-    <CartContext.Provider value={{ cart, addToCart, removeFromCart, updateQty, clearCart, isCartOpen, setIsCartOpen, cartTotal }}>
+    <CartContext.Provider value={{ cart, addToCart, removeFromCart, updateQty, clearCart, cartTotal }}>
       {children}
     </CartContext.Provider>
   );

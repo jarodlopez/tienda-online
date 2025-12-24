@@ -1,6 +1,6 @@
 'use client';
 import Link from 'next/link';
-import { useCart } from '../context/CartContext';
+import { useCart } from '@/context/CartContext'; // Ruta absoluta
 import { ShoppingBag, ShoppingCart, Search } from 'lucide-react';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -53,3 +53,6 @@ export default function Navbar() {
       </nav>
   );
 }
+
+
+

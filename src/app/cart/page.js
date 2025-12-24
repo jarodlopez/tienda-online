@@ -1,16 +1,16 @@
 'use client';
 import { useState } from 'react';
-import { useCart } from '../../context/CartContext';
-import { db } from '../../lib/firebase';
+import { useCart } from '@/context/CartContext'; // Ruta absoluta
+import { db } from '@/lib/firebase'; // Ruta absoluta
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
-import { Trash2, Plus, Minus, Send, CheckCircle, ArrowLeft } from 'lucide-react';
+import { Trash2, Plus, Minus, Send, CheckCircle } from 'lucide-react';
 import Link from 'next/link';
 
 const APP_ID = 'pos-pro-mobile-v2';
 
 export default function CartPage() {
   const { cart, removeFromCart, updateQty, cartTotal, clearCart } = useCart();
-  const [step, setStep] = useState('review'); // review, form, success
+  const [step, setStep] = useState('review'); 
   const [customer, setCustomer] = useState({ name: '', phone: '', address: '', notes: '' });
   const [loading, setLoading] = useState(false);
 
@@ -18,7 +18,6 @@ export default function CartPage() {
     e.preventDefault();
     setLoading(true);
     try {
-        // 1. Guardar orden en Firebase (para el POS)
         await addDoc(collection(db, 'artifacts', APP_ID, 'public/data/orders'), {
             items: cart,
             total: cartTotal,
@@ -28,13 +27,8 @@ export default function CartPage() {
             channel: 'ecommerce-web'
         });
 
-        // 2. Mensaje de WhatsApp
-        const itemsList = cart.map(i => `▪ ${i.qty}x ${i.name} ${i.variant ? `(${i.variant})` : ''}`).join('%0A');
-        const msg = `Hola! Nuevo Pedido:%0A%0A${itemsList}%0A%0ATotal: C$${cartTotal}%0A%0ACliente: ${customer.name}%0ADirección: ${customer.address}`;
-        
         clearCart();
         setStep('success');
-        // window.open(`https://wa.me/50588888888?text=${msg}`, '_blank'); // Descomenta y pon tu número
 
     } catch (err) {
         console.error(err);
@@ -67,7 +61,6 @@ export default function CartPage() {
         <h1 className="text-3xl font-bold mb-8">Resumen de Compra</h1>
         
         <div className="grid md:grid-cols-3 gap-8">
-            {/* Lista de Items */}
             <div className="md:col-span-2 space-y-4">
                 {cart.map(item => (
                     <div key={item.key} className="flex gap-4 p-4 bg-white border rounded-xl shadow-sm">
@@ -91,7 +84,6 @@ export default function CartPage() {
                 ))}
             </div>
 
-            {/* Formulario / Total */}
             <div className="h-fit space-y-6">
                 <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
                     <div className="flex justify-between items-end mb-6 border-b pb-4">
@@ -126,3 +118,6 @@ export default function CartPage() {
     </main>
   );
 }
+
+
+

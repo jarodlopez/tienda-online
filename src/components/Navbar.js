@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 export default function Navbar() {
-  const { cart, setIsCartOpen } = useCart();
+  const { cart } = useCart(); // Quité setIsCartOpen ya que no se usa; ahora link a /cart
   const [term, setTerm] = useState('');
   const router = useRouter();
 
@@ -38,8 +38,8 @@ export default function Navbar() {
              />
           </form>
           
-          <button 
-            onClick={() => setIsCartOpen(true)}
+          <Link 
+            href="/cart"
             className="relative p-2 hover:bg-gray-100 rounded-full transition-colors"
           >
             <ShoppingCart size={24} className="text-gray-700" />
@@ -48,11 +48,8 @@ export default function Navbar() {
                 {cart.reduce((a,c) => a + c.qty, 0)}
               </span>
             )}
-          </button>
+          </Link>
         </div>
       </nav>
   );
 }
-
-
-

@@ -118,6 +118,3 @@ export default function CartPage() {
     </main>
   );
 }
-
-
-

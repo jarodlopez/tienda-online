@@ -1,11 +1,11 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { db, auth } from '../../../lib/firebase';
+import { db, auth } from '@/lib/firebase'; // Ruta absoluta
 import { doc, onSnapshot } from 'firebase/firestore';
 import { signInAnonymously } from "firebase/auth";
 import Link from 'next/link';
 import { ShoppingCart, ArrowLeft, Check, AlertTriangle } from 'lucide-react';
-import { useCart } from '../../../context/CartContext';
+import { useCart } from '@/context/CartContext'; // Ruta absoluta
 import { useRouter } from 'next/navigation';
 
 const APP_ID = 'pos-pro-mobile-v2';
@@ -14,7 +14,7 @@ export default function ProductPage({ params }) {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedVariant, setSelectedVariant] = useState(null);
-  const { addToCart, setIsCartOpen } = useCart();
+  const { addToCart } = useCart();
   const router = useRouter();
 
   useEffect(() => {
@@ -26,7 +26,6 @@ export default function ProductPage({ params }) {
         if (docSnap.exists()) {
            const data = docSnap.data();
            setProduct({ id: docSnap.id, ...data });
-           // Si solo hay una variante o no hay variantes, preseleccionar
            if(data.variants && data.variants.length > 0) {
               setSelectedVariant(null);
            }
@@ -46,7 +45,7 @@ export default function ProductPage({ params }) {
         return;
     }
     addToCart(product, selectedVariant);
-    router.push('/cart'); // Redirigir al carrito o abrir el drawer
+    router.push('/cart'); 
   };
 
   const currentPrice = selectedVariant ? (selectedVariant.price || product?.price) : product?.price;
@@ -62,7 +61,6 @@ export default function ProductPage({ params }) {
       </Link>
 
       <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden grid md:grid-cols-2 gap-0 md:gap-8">
-         {/* Imagen */}
          <div className="bg-gray-100 aspect-square relative">
             {product.image && <img src={product.image} className="w-full h-full object-cover" />}
             {parseInt(currentStock) <= 0 && (
@@ -72,7 +70,6 @@ export default function ProductPage({ params }) {
             )}
          </div>
 
-         {/* Info */}
          <div className="p-6 md:p-8 flex flex-col justify-center">
             <span className="text-indigo-600 font-bold uppercase tracking-wider text-xs mb-2">{product.category}</span>
             <h1 className="text-3xl font-extrabold text-gray-900 mb-2">{product.name}</h1>
@@ -80,7 +77,6 @@ export default function ProductPage({ params }) {
                 {new Intl.NumberFormat('es-NI', { style: 'currency', currency: 'NIO' }).format(currentPrice)}
             </p>
 
-            {/* Selector Variantes */}
             {product.variants && product.variants.length > 0 && (
                 <div className="mb-6">
                     <label className="block text-sm font-medium text-gray-700 mb-2">Opciones Disponibles:</label>
@@ -102,7 +98,6 @@ export default function ProductPage({ params }) {
                 </div>
             )}
 
-            {/* Stock Indicator */}
             <div className="flex items-center gap-2 mb-6 text-sm">
                 {parseInt(currentStock) > 0 ? (
                     <span className="flex items-center gap-1 text-green-600 font-bold"><Check size={16}/> En Stock ({currentStock} disp.)</span>
@@ -123,3 +118,6 @@ export default function ProductPage({ params }) {
     </main>
   );
 }
+
+
+

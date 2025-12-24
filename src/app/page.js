@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { db, auth } from '../lib/firebase';
+import { db, auth } from '@/lib/firebase'; // Ruta absoluta
 import { collection, query, onSnapshot } from 'firebase/firestore';
 import { signInAnonymously } from "firebase/auth";
 import Link from 'next/link';
@@ -18,7 +18,6 @@ export default function Home() {
   useEffect(() => {
     const init = async () => {
       if (!auth.currentUser) await signInAnonymously(auth);
-      // Leemos TODOS los productos y filtramos en cliente para máxima velocidad en categorías dinámicas
       const q = query(collection(db, 'artifacts', APP_ID, 'public/data/products'));
       
       const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -32,10 +31,8 @@ export default function Home() {
     init();
   }, []);
 
-  // Extraer categorías únicas
   const categories = ['Todos', ...new Set(products.map(p => p.category || p.cat).filter(Boolean))];
 
-  // Filtrado
   const filtered = products.filter(p => 
     p.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -44,7 +41,6 @@ export default function Home() {
 
   return (
     <main className="max-w-6xl mx-auto px-4 py-8">
-      {/* Categorías (Links Reales) */}
       <div className="flex gap-3 overflow-x-auto pb-6 scrollbar-hide">
          {categories.map(cat => (
            <Link 
@@ -100,3 +96,6 @@ export default function Home() {
     </main>
   );
 }
+
+
+

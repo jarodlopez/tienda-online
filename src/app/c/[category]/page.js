@@ -1,4 +1,3 @@
-
 'use client';
 import { useState, useEffect } from 'react';
 import { db, auth } from '@/lib/firebase'; // Ruta absoluta
@@ -18,7 +17,7 @@ export default function CategoryPage({ params }) {
     const init = async () => {
       if (!auth.currentUser) await signInAnonymously(auth);
       const q = query(collection(db, 'artifacts', APP_ID, 'public/data/products'));
-      
+
       const unsubscribe = onSnapshot(q, (snapshot) => {
         const list = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
                                   .filter(p => p.active !== false && (p.category === categoryName || p.cat === categoryName));
@@ -80,5 +79,3 @@ export default function CategoryPage({ params }) {
     </main>
   );
 }
-
-

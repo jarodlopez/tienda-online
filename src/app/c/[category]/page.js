@@ -1,6 +1,7 @@
+
 'use client';
 import { useState, useEffect } from 'react';
-import { db, auth } from '../../../lib/firebase'; // Nota los ../
+import { db, auth } from '@/lib/firebase'; // Ruta absoluta
 import { collection, query, onSnapshot } from 'firebase/firestore';
 import { signInAnonymously } from "firebase/auth";
 import Link from 'next/link';
@@ -11,8 +12,6 @@ const APP_ID = 'pos-pro-mobile-v2';
 export default function CategoryPage({ params }) {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  
-  // Decodificar la URL (ej: Ropa%20Hombre -> Ropa Hombre)
   const categoryName = decodeURIComponent(params.category);
 
   useEffect(() => {
@@ -81,3 +80,5 @@ export default function CategoryPage({ params }) {
     </main>
   );
 }
+
+
